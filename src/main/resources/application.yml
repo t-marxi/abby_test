@@ -1,0 +1,19 @@
+spring:
+  jackson:
+    serialization.indent_output: true
+  http:
+    multipart.max-file-size: 20Mb
+    max-request-size: 20Mb
+
+
+server:
+  jetty:
+    server.max-http-post-size: 20Mb
+  port: 8080
+file:
+  exe:
+    path: C:/programs/Hello/Hello.exe
+  input:
+    folder: C:/programs/input
+  output:
+    folder: C:/programs/output
