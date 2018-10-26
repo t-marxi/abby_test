@@ -1,5 +1,6 @@
 package org.abby.recognizer.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.abby.recognizer.service.RecognizeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -13,7 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-
+@Slf4j
 @RestController
 public class RecognizerController {
 
@@ -22,6 +23,7 @@ public class RecognizerController {
 
     @GetMapping("/test")
     public ResponseEntity testServer() {
+        log.info("Receive test request.");
         return ResponseEntity.ok()
                 .contentType(MediaType.TEXT_HTML)
                 .body("Test is success");
@@ -30,6 +32,7 @@ public class RecognizerController {
     @PostMapping("/recognize-passport")
     public ResponseEntity uploadFile(
             @RequestParam("file") MultipartFile passportFile) throws Exception {
+        log.info("Received file for recognizing with name " + passportFile.getOriginalFilename());
         File result = recognizeService.recognizePassport(passportFile);
         Path path = Paths.get(result.getAbsolutePath());
         ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(path));

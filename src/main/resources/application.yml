@@ -1,19 +1,19 @@
 spring:
   jackson:
     serialization.indent_output: true
+  servlet:
+    multipart.max-file-size: 10Mb
+    max-request-size: 10Mb
   http:
-    multipart.max-file-size: 20Mb
-    max-request-size: 20Mb
+    multipart.max-file-size: 10Mb
+    max-request-size: 10Mb
 
 
 server:
   jetty:
-    server.max-http-post-size: 20Mb
+    server.max-http-post-size: 10Mb
   port: 8080
 file:
-  exe:
-    path: C:/programs/Hello/Hello.exe
-  input:
-    folder: C:/programs/input
-  output:
-    folder: C:/programs/output
+  exe.path: C:/programs/Hello/Hello.exe
+  input.folder: C:/programs/input
+  output.folder: C:/programs/output
