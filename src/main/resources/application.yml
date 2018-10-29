@@ -17,3 +17,4 @@ file:
   exe.path: C:/programs/Hello/Hello.exe
   input.folder: C:/programs/input
   output.folder: C:/programs/output
+  log.folder: C:/programs/log

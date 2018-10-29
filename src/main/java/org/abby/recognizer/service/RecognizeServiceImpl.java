@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
@@ -19,6 +20,8 @@ public class RecognizeServiceImpl implements RecognizeService {
     String inputFolder;
     @Value("${file.output.folder}")
     String outputFolder;
+    @Value("${file.log.folder}")
+    String logFolder;
 
     @Override
     public File recognizePassport(MultipartFile passportFile) throws Exception {
@@ -27,11 +30,19 @@ public class RecognizeServiceImpl implements RecognizeService {
         File inputFile = new File(inputFolder + "/" + timestamp + "." + type);
         inputFile.createNewFile();
         Files.copy(passportFile.getInputStream(), inputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        log.info(String.format("Create file with name %s for received file with name %s", inputFile.getAbsolutePath(), passportFile.getOriginalFilename()));
+        log.trace(String.format("Create file with name %s for received file with name %s", inputFile.getAbsolutePath(), passportFile.getOriginalFilename()));
         File outputFile = new File(outputFolder + "/" + timestamp + ".xml");
         outputFile.createNewFile();
+
+        File logFile = new File(logFolder + "/" + timestamp + ".log");
+        outputFile.createNewFile();
+
         long start = System.currentTimeMillis();
-        Process process = new ProcessBuilder(fileExe, inputFile.getAbsolutePath(), outputFile.getAbsolutePath()).start();
+        Process process = new ProcessBuilder(fileExe,
+                inputFile.getAbsolutePath(),
+                outputFile.getAbsolutePath(),
+                logFile.getAbsolutePath())
+                .start();
         try {
             process.waitFor();
         } catch (InterruptedException e) {
@@ -39,6 +50,8 @@ public class RecognizeServiceImpl implements RecognizeService {
         }
         long end = System.currentTimeMillis();
         log.info(String.format("Recognizing took %d milliseconds", (end - start)));
+        String text = new String(Files.readAllBytes(logFile.toPath()), StandardCharsets.UTF_8);
+        log.trace("All data from recognizing {}-{}/n{}", passportFile.getOriginalFilename(), timestamp, text);
         return outputFile;
     }
 
