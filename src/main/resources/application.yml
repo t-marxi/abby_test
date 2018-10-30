@@ -1,3 +1,4 @@
+# Конфигурация для сервера. задается максимальный размер принимаемого файла 10 mb.
 spring:
   jackson:
     serialization.indent_output: true
@@ -8,13 +9,17 @@ spring:
     multipart.max-file-size: 10Mb
     max-request-size: 10Mb
 
-
+# установка порта и размера принимаемого файла для jetty
 server:
-  jetty:
-    server.max-http-post-size: 10Mb
+  max-http-post-size: 10Mb
   port: 8080
+# Пути к папкам где лежат файлы для запуска приложения для распознования.
 file:
+  #  путь к исполняему файлк для распознования
   exe.path: C:/programs/Hello/Hello.exe
+  #  путь к папке с фалами для распознования
   input.folder: C:/programs/input
+  #  путь к папке с выходными фалами после распознования
   output.folder: C:/programs/output
+  #  путь к папке с логами работы приложения.
   log.folder: C:/programs/log

@@ -24,9 +24,9 @@ public class RecognizeServiceImpl implements RecognizeService {
     String logFolder;
 
     @Override
-    public File recognizePassport(MultipartFile passportFile) throws Exception {
+    public Data recognizePassport(MultipartFile passportFile) throws Exception {
         long timestamp = getTimestamp();
-        String type = getExtention(passportFile);
+        String type = getExtension(passportFile);
         File inputFile = new File(inputFolder + "/" + timestamp + "." + type);
         inputFile.createNewFile();
         Files.copy(passportFile.getInputStream(), inputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -51,15 +51,20 @@ public class RecognizeServiceImpl implements RecognizeService {
         long end = System.currentTimeMillis();
         log.info(String.format("Recognizing took %d milliseconds", (end - start)));
         String text = new String(Files.readAllBytes(logFile.toPath()), StandardCharsets.UTF_8);
-        log.trace("All data from recognizing {}-{}/n{}", passportFile.getOriginalFilename(), timestamp, text);
-        return outputFile;
+        log.info("All data from recognizing {}-{}/n{}", passportFile.getOriginalFilename(), timestamp, text);
+
+        File errorLogFile = new File(logFolder + "/" + timestamp + "-error.log");
+        if (errorLogFile.exists()) {
+            return new Data(new String(Files.readAllBytes(errorLogFile.toPath()), StandardCharsets.UTF_8));
+        }
+        return new Data(outputFile);
     }
 
     private synchronized long getTimestamp() {
         return System.currentTimeMillis();
     }
 
-    public String getExtention(MultipartFile file) {
+    public String getExtension(MultipartFile file) {
         String[] split = file.getOriginalFilename().split("\\.");
         if (split.length < 2) {
             throw new IllegalArgumentException("File name doesn't contain the extend.");
