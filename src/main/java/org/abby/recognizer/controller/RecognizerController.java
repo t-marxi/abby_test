@@ -1,6 +1,8 @@
 package org.abby.recognizer.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.abby.recognizer.data.ResponseData;
 import org.abby.recognizer.service.RecognizeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -21,6 +23,7 @@ public class RecognizerController {
 
     @Autowired
     RecognizeService recognizeService;
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     @GetMapping("/test")
     public ResponseEntity testServer() {
@@ -46,10 +49,7 @@ public class RecognizerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Could not be recognized");
         }
-        ByteArrayResource resource = new ByteArrayResource(byteArray);
-        return ResponseEntity.ok()
-                .contentLength(result.length())
-                .contentType(MediaType.parseMediaType("application/octet-stream"))
-                .body(resource);
+        ResponseData responseData = objectMapper.readValue(byteArray, ResponseData.class);
+        return new ResponseEntity(responseData, HttpStatus.OK);
     }
 }
